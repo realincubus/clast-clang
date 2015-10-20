@@ -17,6 +17,8 @@
 #endif
 
 
+using namespace std;
+
 namespace clast_clang{
 
 
@@ -575,10 +577,10 @@ void pprint_stmt_list(struct cloogoptions *options, FILE *dst, int indent,
  *                       Pretty Printing (dirty) functions                    *
  ******************************************************************************/
 
-void clast_pprint(FILE *foo, struct clast_stmt *root,
+void clast_pprint(ofstream& foo, struct clast_stmt *root,
 		  int indent, CloogOptions *options)
 {
-    pprint_stmt_list(options, foo, indent, root);
+    //pprint_stmt_list(options, foo, indent, root);
 }
 
 
