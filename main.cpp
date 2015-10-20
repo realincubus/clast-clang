@@ -503,6 +503,7 @@ void pprint_for(struct cloogoptions *options, std::stringstream& dst, int indent
 	    }
         }
         if ((f->parallel & CLAST_PARALLEL_OMP) && !(f->parallel & CLAST_PARALLEL_MPI)) {
+#if 0
             if (f->LB) {
                 //fprintf(dst, "lbp=");
 		dst << "lbp=";
@@ -519,6 +520,7 @@ void pprint_for(struct cloogoptions *options, std::stringstream& dst, int indent
                 //fprintf(dst, ";\n");
 		dst << ";" << endl;
             }
+#endif
 #if 0
             fprintf(dst, "#pragma omp parallel for%s%s%s%s%s%s\n",
                     (f->private_vars)? " private(":"",
@@ -622,10 +624,11 @@ void pprint_for(struct cloogoptions *options, std::stringstream& dst, int indent
 
     if (f->LB) {
 	//fprintf(dst, "%s=", f->iterator);
-	dst << f->iterator << "=";
+	dst << "auto " << f->iterator << "=";
         if (f->parallel & (CLAST_PARALLEL_OMP | CLAST_PARALLEL_MPI)) {
             //fprintf(dst, "lbp");
-	    dst << "lbp";
+	    //dst << "lbp";
+	    pprint_expr(options, dst, f->LB);
         }else if (f->parallel & CLAST_PARALLEL_VEC){
             //fprintf(dst, "lbv");
 	    dst << "lbv";
@@ -651,7 +654,8 @@ void pprint_for(struct cloogoptions *options, std::stringstream& dst, int indent
 
         if (f->parallel & (CLAST_PARALLEL_OMP | CLAST_PARALLEL_MPI)) {
             //fprintf(dst, "ubp");
-	    dst << "ubp";
+	    //dst << "ubp";
+	    pprint_expr(options, dst, f->UB);
         }else if (f->parallel & CLAST_PARALLEL_VEC){
             //fprintf(dst, "ubv");
 	    dst << "ubv";
