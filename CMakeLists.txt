@@ -19,5 +19,5 @@ SET( CMAKE_EXPORT_COMPILE_COMMANDS on )
 #INCLUDE_DIRECTORIES( )
 ADD_LIBRARY( clast-clang SHARED main.cpp)
 
-TARGET_LINK_LIBRARIES( clast-clang cloog-isl )
+TARGET_LINK_LIBRARIES( clast-clang cloog-isl gmp osl )
 
