@@ -8,6 +8,7 @@
 #include <cloog/cloog.h>
 #include <cloog/clast.h>
 #include <sstream>
+#include <iostream>
 
 #ifdef OSL_SUPPORT
 #include <osl/util.h>
@@ -59,6 +60,8 @@ static void pprint_for(struct cloogoptions *options, std::stringstream &dst, int
 		 struct clast_for *f);
 static void pprint_stmt_list(struct cloogoptions *options, stringstream& dst, int indent,
 		       struct clast_stmt *s);
+
+vector<std::string>* global_statement_texts;
 
 
 void pprint_name(std::stringstream& dst, struct clast_name *n)
@@ -377,6 +380,21 @@ static int pprint_parentheses_are_safer(struct clast_assignment * s) {
   return 1;
 }
 
+void replace_marker_with( int id , std::string& text, std::string replacement ){
+  std::cout << "text: " << text << std::endl;
+
+  std::string placeholder = "..."s + to_string(id) + "..."s;
+
+  std::cout << "placeholder: " << placeholder << std::endl;
+  std::cout << "replacement: " << replacement << std::endl;
+  auto pos = text.find(placeholder);
+  while ( pos != string::npos ){
+    text = text.replace(pos,placeholder.length(), replacement ); 
+    pos = text.find(placeholder);
+  }
+  std::cout << "text: " << text << std::endl;
+} 
+
 void pprint_user_stmt(struct cloogoptions *options, std::stringstream& dst,
 		       struct clast_user_stmt *u)
 {
@@ -391,8 +409,35 @@ void pprint_user_stmt(struct cloogoptions *options, std::stringstream& dst,
 	dst << u->statement->name;
     }else{
 	//fprintf(dst, "S%d", u->statement->number);
-	dst << "S" << u->statement->number;
+	//dst << "S" << u->statement->number;
+	// TODO replace the placeholders with the new iterators
+	
+        // TODO generate a substitution
+	int ctr = 0;
+	for (t = u->substitutions; t; t = t->next) {
+	  stringstream substitution;
+	  assert(CLAST_STMT_IS_A(t, stmt_ass));
+	  if (pprint_parentheses_are_safer((struct clast_assignment *)t)) {
+	    //fprintf(dst, "(");
+	    substitution << "(";
+	    parenthesis_to_close = 1;
+	  }
+	  pprint_assignment(options, substitution, (struct clast_assignment *)t);
+	  if (t->next) {
+	      if (parenthesis_to_close) {
+		//fprintf(dst, ")");
+		substitution << ")";
+		parenthesis_to_close = 0;
+	      }
+	  }
+
+	  // at this point the substitution is generated
+	  replace_marker_with( ctr, (*global_statement_texts)[u->statement->number-1], substitution.str() );
+
+	}
+	dst << (*global_statement_texts)[u->statement->number-1];
     }
+#if 0
     //fprintf(dst, "(");
     dst << "(";
     for (t = u->substitutions; t; t = t->next) {
@@ -425,6 +470,7 @@ void pprint_user_stmt(struct cloogoptions *options, std::stringstream& dst,
     }
     //fprintf(dst, "\n");
     dst << endl;
+#endif
 }
 
 void pprint_guard(struct cloogoptions *options, std::stringstream& dst, int indent,
@@ -756,8 +802,9 @@ void pprint_stmt_list(struct cloogoptions *options, stringstream& dst, int inden
  ******************************************************************************/
 
 void clast_pprint(stringstream& foo, struct clast_stmt *root,
-		  int indent, CloogOptions *options)
+		  int indent, CloogOptions *options, vector<std::string>& statement_texts)
 {
+  global_statement_texts = &statement_texts;
     pprint_stmt_list(options, foo, indent, root);
 }
 
