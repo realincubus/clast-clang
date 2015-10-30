@@ -577,9 +577,12 @@ void pprint_for(struct cloogoptions *options, std::stringstream& dst, int indent
                     (f->reduction_vars)? ")": "");
 #endif
 	    dst << "#pragma omp parallel for ";
+#if 0
+	    // TODO reenable if we have private vars
 	    if ( f->private_vars ) {
 	      dst << "private(" << f->private_vars << ")";
 	    }
+#endif 
 	    if ( f->reduction_vars ) {
 	      dst << "reduction(" << f->reduction_vars << ")";
 	    }
@@ -646,9 +649,12 @@ void pprint_for(struct cloogoptions *options, std::stringstream& dst, int indent
                         (f->reduction_vars)? ")": "");
 #endif
 		dst << "#pragma omp parallel for ";
+		// renable this if we really have private vars
+#if 0
 		if ( f->private_vars ) {
 		  dst << "private(" << f->private_vars << ")";
 		}
+#endif
 		if ( f->reduction_vars ) {
 		  dst << "reduction(" << f->reduction_vars << ")";
 		}
