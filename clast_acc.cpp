@@ -32,7 +32,7 @@
 
 using namespace std;
 
-namespace clast_clang{
+namespace clast_clang_acc{
 
 
 static void pprint_name(std::stringstream &dst, struct clast_name *n);

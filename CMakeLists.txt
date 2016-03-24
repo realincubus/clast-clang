@@ -19,11 +19,11 @@ include_directories( ../../clan/osl/include )
 SET( CMAKE_EXPORT_COMPILE_COMMANDS on )
 
 #INCLUDE_DIRECTORIES( )
-ADD_LIBRARY( clast-clang_omp SHARED clast_omp.cpp)
-ADD_LIBRARY( clast-clang_acc SHARED clast_acc.cpp)
+ADD_LIBRARY( clast-clang SHARED clast_omp.cpp clast_acc.cpp )
+#ADD_LIBRARY( clast-clang_acc SHARED clast_acc.cpp)
 
 
 
-TARGET_LINK_LIBRARIES( clast-clang_omp cloog-isl gmp osl )
-TARGET_LINK_LIBRARIES( clast-clang_acc cloog-isl gmp osl )
+TARGET_LINK_LIBRARIES( clast-clang cloog-isl gmp osl )
+#TARGET_LINK_LIBRARIES( clast-clang_acc cloog-isl gmp osl )
 

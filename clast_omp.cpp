@@ -32,7 +32,7 @@
 
 using namespace std;
 
-namespace clast_clang{
+namespace clast_clang_omp{
 
 
 static void pprint_name(std::stringstream &dst, struct clast_name *n);
@@ -66,8 +66,7 @@ vector<std::string>* global_statement_texts;
 
 void pprint_name(std::stringstream& dst, struct clast_name *n)
 {
-    //fprintf(dst, "%s", n->name);
-    dst << n->name;
+        dst << n->name;
 }
 
 /**
@@ -84,22 +83,18 @@ void pprint_term(struct cloogoptions *i, std::stringstream &dst, struct clast_te
 	if (cloog_int_is_one(t->val))
 	    ;
 	else if (cloog_int_is_neg_one(t->val)){
-	    //fprintf(dst, "-");
-	    dst << "-";
+	    	    dst << "-";
 	} else {
 	  // TODO external function
 	    cloog_int_print(dst, t->val);
-	    //fprintf(dst, "*");
-	    dst << "*";
+	    	    dst << "*";
 	}
 	if (group){
-	    //fprintf(dst, "(");
-	    dst << "(";
+	    	    dst << "(";
 	}
 	pprint_expr(i, dst, t->var);
 	if (group){
-	    //fprintf(dst, ")");
-	    dst << ")";
+	    	    dst << ")";
 	}
     } else
 	cloog_int_print(dst, t->val);
@@ -119,8 +114,7 @@ void pprint_sum(struct cloogoptions *opt, std::stringstream& dst, struct clast_r
 	assert(r->elts[i]->type == clast_expr_term);
 	t = (struct clast_term *) r->elts[i];
 	if (cloog_int_is_pos(t->val)){
-	    //fprintf(dst, "+");
-	    dst << "+";
+	    	    dst << "+";
 	}
 	pprint_term(opt, dst, t);
     }
@@ -171,14 +165,11 @@ void pprint_binary(struct cloogoptions *i, std::stringstream& dst, struct clast_
 	    break;
 	}
     }
-    //fprintf(dst, "%s", s1);
-    dst << s1;
+        dst << s1;
     pprint_expr(i, dst, b->LHS);
-    //fprintf(dst, "%s", s2);
-    dst << s2;
+        dst << s2;
     cloog_int_print(dst, b->RHS);
-    //fprintf(dst, "%s", s3);
-    dst << s3;
+        dst << s3;
 }
 
 void pprint_minmax_f(struct cloogoptions *info, std::stringstream& dst, struct clast_reduction *r)
@@ -186,20 +177,17 @@ void pprint_minmax_f(struct cloogoptions *info, std::stringstream& dst, struct c
     int i;
     if (r->n == 0)
 	return;
-    //fprintf(dst, r->type == clast_red_max ? "MAX(" : "MIN(");
-    if ( r->type == clast_red_max ){
+        if ( r->type == clast_red_max ){
       dst << "MAX(";
     }else{
      dst <<  "MIN(";
     }
     pprint_expr(info, dst, r->elts[0]);
     for (i = 1; i < r->n; ++i) {
-	//fprintf(dst, ",");
-	dst << ",";
+		dst << ",";
 	pprint_expr(info, dst, r->elts[i]);
     }
-    //fprintf(dst, ")");
-    dst << ")";
+        dst << ")";
 }
 
 // TODO make it std::max std::min aware
@@ -207,8 +195,7 @@ void pprint_minmax_c(struct cloogoptions *info, std::stringstream& dst, struct c
 {
     int i;
     for (i = 1; i < r->n; ++i){
-	//fprintf(dst, r->type == clast_red_max ? "max(" : "min(");
-	if ( r->type == clast_red_max ) {
+		if ( r->type == clast_red_max ) {
 	  dst << "max(";
 	}else{
 	  dst << "min(";
@@ -217,11 +204,9 @@ void pprint_minmax_c(struct cloogoptions *info, std::stringstream& dst, struct c
     if (r->n > 0)
 	pprint_expr(info, dst, r->elts[0]);
     for (i = 1; i < r->n; ++i) {
-	//fprintf(dst, ",");
-	dst << ",";
+		dst << ",";
 	pprint_expr(info, dst, r->elts[i]);
-	//fprintf(dst, ")");
-	dst << ")";
+		dst << ")";
     }
 }
 
@@ -273,14 +258,11 @@ void pprint_equation(struct cloogoptions *i, std::stringstream& dst, struct clas
 {
     pprint_expr(i, dst, eq->LHS);
     if (eq->sign == 0){
-	//fprintf(dst, " == ");
-	dst << " == ";
+		dst << " == ";
     }else if (eq->sign > 0){
-	//fprintf(dst, " >= ");
-	dst << " >= ";
+		dst << " >= ";
     }else{
-	//fprintf(dst, " <= ");
-	dst << " <= ";
+		dst << " <= ";
     }
     pprint_expr(i, dst, eq->RHS);
 }
@@ -289,8 +271,7 @@ void pprint_assignment(struct cloogoptions *i, stringstream& dst,
 			struct clast_assignment *a)
 {
     if (a->LHS){
-      //fprintf(dst, "%s = ", a->LHS);
-      dst << a->LHS << " = ";
+            dst << a->LHS << " = ";
     }
     pprint_expr(i, dst, a->RHS);
 }
@@ -342,13 +323,11 @@ int pprint_osl_body(struct cloogoptions *options, std::stringstream& dst,
             t = t->next;
           pprint_assignment(options, dst, (struct clast_assignment *)t);
         } else {
-          //fprintf(dst, "%c", *expr++);
-	  dst << *expr;
+          	  dst << *expr;
 	  expr++;
         }
       }
-      //fprintf(dst, "\n");
-      dst << endl;
+            dst << endl;
       free(tmp);
       return 1;
     }
@@ -405,28 +384,22 @@ void pprint_user_stmt(struct cloogoptions *options, std::stringstream& dst,
       return;
     
     if (u->statement->name){
-	//fprintf(dst, "%s", u->statement->name);
-	dst << u->statement->name;
+		dst << u->statement->name;
     }else{
-	//fprintf(dst, "S%d", u->statement->number);
-	//dst << "S" << u->statement->number;
-	// TODO replace the placeholders with the new iterators
+		//dst << "S" << u->statement->number;
 	
-        // TODO generate a substitution
 	int ctr = 0;
 	for (t = u->substitutions; t; t = t->next) {
 	  stringstream substitution;
 	  assert(CLAST_STMT_IS_A(t, stmt_ass));
 	  if (pprint_parentheses_are_safer((struct clast_assignment *)t)) {
-	    //fprintf(dst, "(");
-	    substitution << "(";
+	    	    substitution << "(";
 	    parenthesis_to_close = 1;
 	  }
 	  pprint_assignment(options, substitution, (struct clast_assignment *)t);
 	  if (t->next) {
 	      if (parenthesis_to_close) {
-		//fprintf(dst, ")");
-		substitution << ")";
+				substitution << ")";
 		parenthesis_to_close = 0;
 	      }
 	  }
@@ -438,38 +411,30 @@ void pprint_user_stmt(struct cloogoptions *options, std::stringstream& dst,
 	dst << (*global_statement_texts)[u->statement->number-1];
     }
 #if 0
-    //fprintf(dst, "(");
-    dst << "(";
+        dst << "(";
     for (t = u->substitutions; t; t = t->next) {
 	assert(CLAST_STMT_IS_A(t, stmt_ass));
         if (pprint_parentheses_are_safer((struct clast_assignment *)t)) {
-	  //fprintf(dst, "(");
-	  dst << "(";
+	  	  dst << "(";
           parenthesis_to_close = 1;
         }
 	pprint_assignment(options, dst, (struct clast_assignment *)t);
 	if (t->next) {
             if (parenthesis_to_close) {
-	      //fprintf(dst, ")");
-	      dst << ")";
+	      	      dst << ")";
               parenthesis_to_close = 0;
             }
-	    //fprintf(dst, ",");
-	    dst << ",";
+	    	    dst << ",";
         }
     }
     if (parenthesis_to_close){
-      //fprintf(dst, ")");
-      dst << ")";
+            dst << ")";
     }
-    //fprintf(dst, ")");
-    dst << ")";
+        dst << ")";
     if (options->language != CLOOG_LANGUAGE_FORTRAN){
-      //fprintf(dst, ";");
-      dst << ";";
+            dst << ";";
     }
-    //fprintf(dst, "\n");
-    dst << endl;
+        dst << endl;
 #endif
 }
 
@@ -478,56 +443,43 @@ void pprint_guard(struct cloogoptions *options, std::stringstream& dst, int inde
 {
     int k;
     if (options->language == CLOOG_LANGUAGE_FORTRAN){
-	//fprintf(dst,"IF ");
-	dst << "IF ";
+		dst << "IF ";
     }else{
-	//fprintf(dst,"if ");
-	dst << "if ";
+		dst << "if ";
     }
     if (g->n > 1){
-	//fprintf(dst,"(");
-	dst << "(";
+		dst << "(";
     }
     for (k = 0; k < g->n; ++k) {
 	if (k > 0) {
 	    if (options->language == CLOOG_LANGUAGE_FORTRAN){
-		//fprintf(dst," .AND. ");
-		dst << " .AND. ";
+				dst << " .AND. ";
 	    }else{
-		//fprintf(dst," && ");
-		dst << " && ";
+				dst << " && ";
 	    }
 	}
-	//fprintf(dst,"(");
-	dst << "(";
+		dst << "(";
         pprint_equation(options, dst, &g->eq[k]);
-	//fprintf(dst,")");
-	dst << ")";
+		dst << ")";
     }
     if (g->n > 1){
-	//fprintf(dst,")");
-	dst << ")";
+		dst << ")";
     }
     if (options->language == CLOOG_LANGUAGE_FORTRAN){
-	//fprintf(dst," THEN\n");
-	dst << " THEN" << endl;
+		dst << " THEN" << endl;
     }else{
-	//fprintf(dst," {\n");
-	dst << "{" << endl;
+		dst << "{" << endl;
     }
 
     pprint_stmt_list(options, dst, indent + INDENT_STEP, g->then);
 
-    //fprintf(dst, "%*s", indent, "");
-    for (int i = 0; i < indent; ++i){
+        for (int i = 0; i < indent; ++i){
       dst << " "; 
     }
     if (options->language == CLOOG_LANGUAGE_FORTRAN){
-	//fprintf(dst,"END IF\n"); 
-	dst << "END IF" << endl;
+		dst << "END IF" << endl;
     }else{
-	//fprintf(dst,"}\n"); 
-	dst << "}";
+		dst << "}";
     }
 }
 
@@ -542,8 +494,7 @@ void pprint_for(struct cloogoptions *options, std::stringstream& dst, int indent
 {
     if (options->language == CLOOG_LANGUAGE_C) {
         if (f->time_var_name) {
-            //fprintf(dst, "IF_TIME(%s_start = cloog_util_rtclock());\n",
-            //        (f->time_var_name) ? f->time_var_name : "");
+                        //        (f->time_var_name) ? f->time_var_name : "");
 	    if ( f->time_var_name ) {
 	      dst << "IF_TIME(" << f->time_var_name << " _start = cloog_util_rtclock());" << endl;
 	    }
@@ -551,20 +502,15 @@ void pprint_for(struct cloogoptions *options, std::stringstream& dst, int indent
         if ((f->parallel & CLAST_PARALLEL_OMP) && !(f->parallel & CLAST_PARALLEL_MPI)) {
 #if 0
             if (f->LB) {
-                //fprintf(dst, "lbp=");
-		dst << "lbp=";
+                		dst << "lbp=";
                 pprint_expr(options, dst, f->LB);
-                //fprintf(dst, ";\n");
-		dst << ";" << endl;
+                		dst << ";" << endl;
             }
             if (f->UB) {
-                //fprintf(dst, "%*s", indent, "");
-		pprint_indent( dst, indent );
-                //fprintf(dst, "ubp=");
-		dst << "ubp=";
+                		pprint_indent( dst, indent );
+                		dst << "ubp=";
                 pprint_expr(options, dst, f->UB);
-                //fprintf(dst, ";\n");
-		dst << ";" << endl;
+                		dst << ";" << endl;
             }
 #endif
 #if 0
@@ -587,57 +533,41 @@ void pprint_for(struct cloogoptions *options, std::stringstream& dst, int indent
 	      dst << "reduction(" << f->reduction_vars << ")";
 	    }
 	    dst << endl;
-            //fprintf(dst, "%*s", indent, "");
-	    pprint_indent( dst, indent );
+            	    pprint_indent( dst, indent );
         }
         if ((f->parallel & CLAST_PARALLEL_VEC) && !(f->parallel & CLAST_PARALLEL_OMP)
                && !(f->parallel & CLAST_PARALLEL_MPI)) {
             if (f->LB) {
-                //fprintf(dst, "lbv=");
-		dst << "lbv=";
+                		dst << "lbv=";
                 pprint_expr(options, dst, f->LB);
-                //fprintf(dst, ";\n");
-		dst << ";" << endl;
+                		dst << ";" << endl;
             }
             if (f->UB) {
-                //fprintf(dst, "%*s", indent, "");
-		pprint_indent( dst, indent );
-                //fprintf(dst, "ubv=");
-		dst << "ubv=";
+                		pprint_indent( dst, indent );
+                		dst << "ubv=";
                 pprint_expr(options, dst, f->UB);
-                //fprintf(dst, ";\n");
-		dst << ";" << endl;
+                		dst << ";" << endl;
             }
-            //fprintf(dst, "%*s#pragma ivdep\n", indent, "");
-	    pprint_indent( dst, indent );
+            	    pprint_indent( dst, indent );
 	    dst << "#pragma ivdep" << endl;
-            //fprintf(dst, "%*s#pragma vector always\n", indent, "");
-	    pprint_indent( dst, indent );
+            	    pprint_indent( dst, indent );
 	    dst << "#pragma vector always" << endl;
-            //fprintf(dst, "%*s", indent, "");
-	    pprint_indent(dst, indent );
+            	    pprint_indent(dst, indent );
         }
         if (f->parallel & CLAST_PARALLEL_MPI) {
             if (f->LB) {
-                //fprintf(dst, "_lb_dist=");
-		dst << "_lb_dist=";
+                		dst << "_lb_dist=";
                 pprint_expr(options, dst, f->LB);
-                //fprintf(dst, ";\n");
-		dst << ";" << endl;
+                		dst << ";" << endl;
             }
             if (f->UB) {
-                //fprintf(dst, "%*s", indent, "");
-		pprint_indent( dst, indent );
-                //fprintf(dst, "_ub_dist=");
-		dst << "_ub_dist=";
+                		pprint_indent( dst, indent );
+                		dst << "_ub_dist=";
                 pprint_expr(options, dst, f->UB);
-                //fprintf(dst, ";\n");
-		dst << ";" << endl;
+                		dst << ";" << endl;
             }
-            //fprintf(dst, "%*s", indent, "");
-	    pprint_indent( dst, indent );
-            //fprintf(dst, "polyrt_loop_dist(_lb_dist, _ub_dist, nprocs, my_rank, &lbp, &ubp);\n");
-	    dst << "polyrt_loop_dist(_lb_dist, _ub_dist, nprocs, my_rank, &lbp, &ubp);" << endl;
+            	    pprint_indent( dst, indent );
+            	    dst << "polyrt_loop_dist(_lb_dist, _ub_dist, nprocs, my_rank, &lbp, &ubp);" << endl;
             if (f->parallel & CLAST_PARALLEL_OMP) {
 #if 0
                 fprintf(dst, "#pragma omp parallel for%s%s%s%s%s%s\n",
@@ -660,30 +590,24 @@ void pprint_for(struct cloogoptions *options, std::stringstream& dst, int indent
 		}
 		dst << endl;
             }
-            //fprintf(dst, "%*s", indent, "");
-	    pprint_indent( dst, indent );
+            	    pprint_indent( dst, indent );
         }
 
     }
 
     if (options->language == CLOOG_LANGUAGE_FORTRAN){
-	//fprintf(dst, "DO ");
-	dst << "DO  ";
+		dst << "DO  ";
     }else{
-	//fprintf(dst, "for (");
-	dst << "for (";
+		dst << "for (";
     }
 
     if (f->LB) {
-	//fprintf(dst, "%s=", f->iterator);
-	dst << "auto " << f->iterator << "=";
+		dst << "auto " << f->iterator << "=";
         if (f->parallel & (CLAST_PARALLEL_OMP | CLAST_PARALLEL_MPI)) {
-            //fprintf(dst, "lbp");
-	    //dst << "lbp";
+            	    //dst << "lbp";
 	    pprint_expr(options, dst, f->LB);
         }else if (f->parallel & CLAST_PARALLEL_VEC){
-            //fprintf(dst, "lbv");
-	    dst << "lbv";
+            	    dst << "lbv";
         }else{
 	pprint_expr(options, dst, f->LB);
         }
@@ -691,26 +615,21 @@ void pprint_for(struct cloogoptions *options, std::stringstream& dst, int indent
 	cloog_die("unbounded loops not allowed in FORTRAN.\n");
 
     if (options->language == CLOOG_LANGUAGE_FORTRAN){
-	//fprintf(dst,", ");
-	dst << ", ";
+		dst << ", ";
     }else{
-	//fprintf(dst,";");
-	dst << ";";
+		dst << ";";
     }
 
     if (f->UB) { 
 	if (options->language != CLOOG_LANGUAGE_FORTRAN){
-	    //fprintf(dst,"%s<=", f->iterator);
-	    dst << f->iterator << "<=";
+	    	    dst << f->iterator << "<=";
 	}
 
         if (f->parallel & (CLAST_PARALLEL_OMP | CLAST_PARALLEL_MPI)) {
-            //fprintf(dst, "ubp");
-	    //dst << "ubp";
+            	    //dst << "ubp";
 	    pprint_expr(options, dst, f->UB);
         }else if (f->parallel & CLAST_PARALLEL_VEC){
-            //fprintf(dst, "ubv");
-	    dst << "ubv";
+            	    dst << "ubv";
         }else{
             pprint_expr(options, dst, f->UB);
         }
@@ -721,37 +640,29 @@ void pprint_for(struct cloogoptions *options, std::stringstream& dst, int indent
 	if (cloog_int_gt_si(f->stride, 1)){
 	    cloog_int_print(dst, f->stride);
 	}
-	//fprintf(dst,"\n");
-	dst << endl;
+		dst << endl;
     }
     else {
 	if (cloog_int_gt_si(f->stride, 1)) {
-	    //fprintf(dst,";%s+=", f->iterator);
-	    dst << ";" << f->iterator << "+=";
+	    	    dst << ";" << f->iterator << "+=";
 	    cloog_int_print(dst, f->stride);
-	    //fprintf(dst, ") {\n");
-	    dst << ") {" << endl;
+	    	    dst << ") {" << endl;
       } else
-	//fprintf(dst, "; %s+=1) {\n", f->iterator);
-	dst << ";++" << f->iterator << ") {" << endl;
+		dst << ";++" << f->iterator << ") {" << endl;
     }
 
     pprint_stmt_list(options, dst, indent + INDENT_STEP, f->body);
 
-    //fprintf(dst, "%*s", indent, "");
-    pprint_indent( dst, indent );
+        pprint_indent( dst, indent );
     if (options->language == CLOOG_LANGUAGE_FORTRAN){
-	//fprintf(dst,"END DO\n") ; 
-	dst << "END DO" << endl;
+		dst << "END DO" << endl;
     }else{
-	//fprintf(dst,"}\n") ; 
-	dst << "}" << endl;
+		dst << "}" << endl;
     }
 
     if (options->language == CLOOG_LANGUAGE_C) {
         if (f->time_var_name) {
-            //fprintf(dst, "IF_TIME(%s += cloog_util_rtclock() - %s_start);\n",
-            //        (f->time_var_name) ? f->time_var_name : "",
+                        //        (f->time_var_name) ? f->time_var_name : "",
             //        (f->time_var_name) ? f->time_var_name : "");
 	    if ( f->time_var_name ) {
 	      dst << "IF_TIME(" << f->time_var_name << " += cloog_util_rtclock() - " << f->time_var_name<< "_start);" << endl;
@@ -767,8 +678,7 @@ void pprint_stmt_list(struct cloogoptions *options, stringstream& dst, int inden
 	if (CLAST_STMT_IS_A(s, stmt_root))
 	    continue;
 
-	//fprintf(dst, "%*s", indent, "");
-	// TODO make small function for indentation
+		// TODO make small function for indentation
 	for (int i = 0; i < indent; ++i){
 	  dst << " "; 
 	}
@@ -777,8 +687,7 @@ void pprint_stmt_list(struct cloogoptions *options, stringstream& dst, int inden
 	    if (options->language != CLOOG_LANGUAGE_FORTRAN){
 	      dst << ";";
 	    }
-	    //fprintf(dst, "\n");
-	    dst << endl;
+	    	    dst << endl;
 	} else if (CLAST_STMT_IS_A(s, stmt_user)) {
 	    pprint_user_stmt(options, dst, (struct clast_user_stmt *) s);
 	} else if (CLAST_STMT_IS_A(s, stmt_for)) {
@@ -786,16 +695,13 @@ void pprint_stmt_list(struct cloogoptions *options, stringstream& dst, int inden
 	} else if (CLAST_STMT_IS_A(s, stmt_guard)) {
 	    pprint_guard(options, dst, indent, (struct clast_guard *) s);
 	} else if (CLAST_STMT_IS_A(s, stmt_block)) {
-	    //fprintf(dst, "{\n");
-	    dst << "{" << endl;
+	    	    dst << "{" << endl;
 	    pprint_stmt_list(options, dst, indent + INDENT_STEP, 
 				((struct clast_block *)s)->body);
-	    //fprintf(dst, "%*s", indent, "");
-	    for (int i = 0; i < indent; ++i){
+	    	    for (int i = 0; i < indent; ++i){
 	      dst << " "; 
 	    }
-	    //fprintf(dst, "}\n");
-	    dst << "}" << endl;
+	    	    dst << "}" << endl;
 	} else {
 	    assert(0);
 	}
